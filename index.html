@@ -1,15 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="src/reset.css">
-    <link rel="stylesheet" href="src/style.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="stylesheet" href="src/reset.css" />
+    <link rel="stylesheet" href="src/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather Scanner</title>
-</head>
-<body>
-    <h1>Weather Scanner</h1>
-
+  </head>
+  <body>
+    <div class="main">
+      <div class="weather">
+        <h2 class="temperature">120°C</h2>
+        <h3 class="weather">tornado</h3>
+      </div>
+      <div class="humidity-container">
+        <img class="humidity" src="assets/images/Vector.svg">
+        <h4 class="humidity">102%</h4>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="previous"><</button>
+      <div class="weekday monday">
+        <h5>Mon</h5>
+        <h6 class="day">1</h6>
+      </div>
+      <div class="weekday tuesday">
+        <h5>Tue</h5>
+        <h6 class="day">2</h6>
+      </div>
+      <div class="weekday wednesday">
+        <h5>Wed</h5>
+        <h6 class="day">3</h6>
+      </div>
+      <div class="weekday thursday">
+        <h5>Thu</h5>
+        <h6 class="day">4</h6>
+      </div>
+      <div class="weekday friday">
+        <h5>Fri</h5>
+        <h6 class="day">5</h6>
+      </div>
+      <div class="weekday saturday">
+        <h5>Sat</h5>
+        <h6 class="day">6</h6>
+      </div>
+      <div class="weekday sunday">
+        <h5>Sun</h5>
+        <h6 class="day">7</h6>
+      </div>
+      <button class="next">></button>
+      
+    </div>
+    <footer>
+      <input type="search" class="search" placeholder="select your region" />
+      <button class="cf"></button>
+    </footer>
     <script src="src/script.js"></script>
-</body>
+  </body>
 </html>
+
+<!-- °F -->
+<!-- °C -->
