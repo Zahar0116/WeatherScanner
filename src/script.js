@@ -47,14 +47,49 @@ const weatherCards = document.querySelectorAll(".weekday");
 const searchInput = document.querySelector(".search");
 const cfButton = document.querySelector(".cf");
 const cityForm = document.querySelector("form")
-cityForm.addEventListener("submit", function (e) {
+const next = document.querySelector(".next").onclick = function() {
+    monday.setDate(monday.getDate() + 7)
+    loadWeek(currentLat, currentLon)
+}
+const prev = document.querySelector(".previous").onclick = function() {
+    monday.setDate(monday.getDate() - 7)
+    loadWeek(currentLat, currentLon)
+}
+
+let currentLat = null
+let currentLon = null
+let currentCity = ""
+
+async function updateCoords(city) {
+    const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)
+    const data = await response.json()
+    currentLat = data.results[0].latitude;
+    currentLon = data.results[0].longitude;
+    currentCity = data.results[0].name
+    searchInput.value = currentCity;
+}
+
+navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+    currentLat = coords.latitude;
+    currentLon = coords.longitude;
+
+    await loadWeek(currentLat, currentLon);
+});
+
+cityForm.addEventListener("submit", async function (e) {
     e.preventDefault()
-    loadWeek(searchInput.value)
+    await updateCoords(searchInput.value)
+    await loadWeek(currentLat, currentLon)
 })
 
 const APIKey = "9fa508684060d7e4032f640679d33230";
 
 const today = new Date();
+const monday = new Date(today)
+monday.setHours(12, 0, 0, 0);
+
+const diff = (monday.getDay() + 6) % 7; // Monday = 0, Sunday = 6
+monday.setDate(monday.getDate() - diff);   
 
 let weekWeatherData = [     ]
 
@@ -78,29 +113,25 @@ weatherCards.forEach((card, index) => {
     });
 });
 
-async function loadWeek(city) {
+async function loadWeek(lat, lon) {
+    console.log(lat, lon)
     weekWeatherData.length = 0
-    const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)
-    const data = await response.json()
-    const lat = data.results[0].latitude;
-    const lon = data.results[0].longitude;
-    const today = new Date()
-    const monday = new Date(today)
-    const day = monday.getDate()
-    monday.setDate(today.getDate() -(day === 0 ? 6 : day - 1))
+ 
+    
     const sunday = new Date(monday)
     sunday.setDate(monday.getDate()+6)
 
     const format = date => date.toISOString().split("T")[0];
     const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&start_date=${format(monday)}&end_date=${format(sunday)}&daily=weather_code,temperature_2m_mean,relative_humidity_2m_mean&timezone=auto`)
     const weatherData = await weatherResponse.json()
-    console.log(weatherData.daily)
+    console.log(monday, sunday)
     for (let i = 0; i<7; i++) {
         weekWeatherData.push({
             date:weatherData.daily.time[i],
             temperature:weatherData.daily.temperature_2m_mean[i],
             humidity:weatherData.daily.relative_humidity_2m_mean[i],
             weatherCode:weatherData.daily.weather_code[i],
+            day: new Date(weatherData.daily.time[i]).getDate(),
         })
     }
     console.log(weekWeatherData)
@@ -108,11 +139,25 @@ async function loadWeek(city) {
 
 }
 
+
+
 function render(weekWeatherData) {
     temperatureText.innerText = `${weekWeatherData[selectedDay].temperature}°C`
     humidityText.innerText = `${weekWeatherData[selectedDay].humidity}%`
     weatherText.innerText = WEATHER_CODES[weekWeatherData[selectedDay].weatherCode]
+    weatherCards.forEach((e, i) =>{
+        let date = e.querySelector(".day")
+        date.innerText = weekWeatherData[i].day
+        e.classList.remove("today")
+    })
+    let diffDays = Math.floor((today-monday)/1000/60/60/24)
+    if (diffDays >= 0 && diffDays < 7) {
+        weatherCards[diffDays].classList.add("today");
+    }
+    console.log(diffDays)
+    let monthText = document.querySelector(".month")
     
+    monthText.innerText = monday.toLocaleDateString("en-US", {
+        month: "long",
+    });
 }
-
-loadWeek('london')
