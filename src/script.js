@@ -49,10 +49,12 @@ const cfButton = document.querySelector(".cf");
 const cityForm = document.querySelector("form")
 const next = document.querySelector(".next").onclick = function() {
     monday.setDate(monday.getDate() + 7)
+    gtag("event", "weekChange_next")
     loadWeek(currentLat, currentLon)
 }
 const prev = document.querySelector(".previous").onclick = function() {
     monday.setDate(monday.getDate() - 7)
+    gtag("event", "weekChange_prev")
     loadWeek(currentLat, currentLon)
 }
 
@@ -77,6 +79,7 @@ navigator.geolocation.getCurrentPosition(async ({ coords }) => {
 });
 
 cityForm.addEventListener("submit", async function (e) {
+    gtag("event", "searchCity")
     e.preventDefault()
     await updateCoords(searchInput.value)
     await loadWeek(currentLat, currentLon)
@@ -137,6 +140,10 @@ async function loadWeek(lat, lon) {
     console.log(weekWeatherData)
     render(weekWeatherData)
 
+}
+
+cfButton.onclick = () => {
+    gtag("event", "uselessButton")
 }
 
 
